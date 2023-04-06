@@ -2,35 +2,35 @@ package com.alura;
 // Swing
 
 import com.alura.type.length.Meter;
-import com.alura.type.length.utils.LengthSlugs;
 import com.alura.type.length.utils.LengthUnits;
+import com.alura.type.tempeture.Temperature;
+import com.alura.type.tempeture.utils.TemperatureTypes;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import javax.swing.*;
 
 public class Main extends JFrame {
-
-    // Variables declaration
-    private JComboBox<String> unit1ComboBox;
-    private JComboBox<String> unit2ComboBox;
-    private JTextField input1TextField;
-    private JTextField input2TextField;
-    private JButton convertButton;
-    private JButton clearInputButton;
-    private JButton clearResultButton;
-    private JTextArea resultTextArea;
-
-    // End of variables declaration
 
     public Main() {
         setTitle("Unit Converter");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 250);
-        setLayout(new FlowLayout());
+        setLayout(new BorderLayout());
+
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.addTab("Length Units", createLengthConverterPanel());
+        tabbedPane.addTab("Temperature Units", createTemperatureConverterPanel());
+        add(tabbedPane, BorderLayout.CENTER);
+
+    }
+
+    private JPanel createLengthConverterPanel() {
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new FlowLayout());
 
         String[] units =new String[LengthUnits.values().length];
         // get the length of the enum
@@ -40,41 +40,36 @@ public class Main extends JFrame {
             String unit = lengthUnits[i].name().substring(0, 1).toUpperCase() + lengthUnits[i].name().substring(1).toLowerCase();
             units[i] = unit;
         }
-        unit1ComboBox = new JComboBox<>(units);
-        unit2ComboBox = new JComboBox<>(units);
+        JComboBox<String> unit1ComboBox = new JComboBox<>(units);
+        JComboBox<String> unit2ComboBox = new JComboBox<>(units);
 
-        input1TextField = new JTextField(10);
-        input2TextField = new JTextField(10);
+        JTextField input1TextField = new JTextField(10);
+        JTextField input2TextField = new JTextField(10);
         input2TextField.setEditable(false);
 
-        convertButton = new JButton("Convert");
-        clearInputButton = new JButton("Clear Input");
-        clearResultButton = new JButton("Clear Result");
+        JButton convertButton = new JButton("Convert");
+        JButton clearInputButton = new JButton("Clear Input");
+        JButton clearResultButton = new JButton("Clear Result");
 
-        resultTextArea = new JTextArea(3, 30);
+        JTextArea resultTextArea = new JTextArea(3, 30);
         resultTextArea.setEditable(false);
 
-        add(input1TextField);
-        add(unit1ComboBox);
-        add(new JLabel("to"));
-        add(input2TextField);
-        add(unit2ComboBox);
-        add(convertButton);
-        add(resultTextArea);
-        add(clearInputButton);
-        add(clearResultButton);
+        panel.add(input1TextField);
+        panel.add(unit1ComboBox);
+        panel.add(new JLabel("to"));
+        panel.add(input2TextField);
+        panel.add(unit2ComboBox);
+        panel.add(convertButton);
+        panel.add(resultTextArea);
+        panel.add(clearInputButton);
+        panel.add(clearResultButton);
 
         convertButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    // Get the value from the input field
-                    LengthUnits unit1 = LengthUnits.values()[unit1ComboBox.getSelectedIndex()];
-                    LengthUnits unit2 = LengthUnits.values()[unit2ComboBox.getSelectedIndex()];
-
-
                     double inputValue = Double.parseDouble(input1TextField.getText());
-                    double convertedValue = convert(inputValue,unit1,unit2);
+                    double convertedValue = unitConvert(inputValue,unit1ComboBox.getSelectedIndex(),unit2ComboBox.getSelectedIndex());
                     input2TextField.setText(formatResult(convertedValue));
                     resultTextArea.setText("Converted successfully.");
                 } catch (NumberFormatException ex) {
@@ -100,6 +95,51 @@ public class Main extends JFrame {
             }
         });
 
+        return panel;
+    }
+    private JPanel createTemperatureConverterPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new FlowLayout());
+
+        String[] temperatureUnits = {"Celsius", "Fahrenheit", "Kelvin"};
+
+        JComboBox<String> tempUnit1ComboBox = new JComboBox<>(temperatureUnits);
+        JComboBox<String> tempUnit2ComboBox = new JComboBox<>(temperatureUnits);
+
+        JTextField tempInput1TextField = new JTextField(10);
+        JTextField tempInput2TextField = new JTextField(10);
+        tempInput2TextField.setEditable(false);
+
+        JButton tempConvertButton = new JButton("Convert");
+        JTextArea tempResultTextArea = new JTextArea(3, 30);
+        tempResultTextArea.setEditable(false);
+
+        panel.add(tempInput1TextField);
+        panel.add(tempUnit1ComboBox);
+        panel.add(new JLabel("to"));
+        panel.add(tempInput2TextField);
+        panel.add(tempUnit2ComboBox);
+        panel.add(tempConvertButton);
+        panel.add(tempResultTextArea);
+
+        tempConvertButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    double inputValue = Double.parseDouble(tempInput1TextField.getText());
+
+                    double convertedValue = temperatureConvert(inputValue,
+                            tempUnit1ComboBox.getSelectedIndex(),
+                            tempUnit2ComboBox.getSelectedIndex());
+                    tempInput2TextField.setText(formatResult(convertedValue));
+                    tempResultTextArea.setText("Converted successfully.");
+                } catch (NumberFormatException ex) {
+                    tempResultTextArea.setText("Invalid input. Please enter a valid number.");
+                }
+            }
+        });
+
+        return panel;
     }
 
     private String formatResult(double value) {
@@ -107,10 +147,22 @@ public class Main extends JFrame {
         return decimalFormat.format(value);
     }
 
-    private double convert(double value, LengthUnits fromUnit, LengthUnits toUnit) {
+    private double unitConvert(double value, int fromUnit, int toUnit) {
         Meter meter = new Meter();
-        double valueInMeters = meter.getValueInMeters(value,fromUnit);
-        return meter.setValueFromMeters(valueInMeters, toUnit);
+        // Get the value from the input field
+        LengthUnits unit1 = LengthUnits.values()[fromUnit];
+        LengthUnits unit2 = LengthUnits.values()[toUnit];
+
+        return meter.convert(value,unit1, unit2);
+    }
+
+    private double temperatureConvert(double value, int fromUnit, int toUnit) {
+        Temperature temperature = new Temperature();
+
+        // Get the value from the input field
+        TemperatureTypes unit1 = TemperatureTypes.values()[fromUnit];
+        TemperatureTypes unit2 = TemperatureTypes.values()[toUnit];
+        return temperature.convert(value,unit1, unit2);
     }
 
 

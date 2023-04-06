@@ -4,6 +4,7 @@ import com.alura.type.length.utils.LengthBase;
 import com.alura.type.length.utils.LengthBaseInterface;
 import com.alura.type.length.utils.LengthSlugs;
 import com.alura.type.length.utils.LengthUnits;
+import com.alura.type.tempeture.utils.TemperatureTypes;
 
 
 public class Meter extends LengthBase implements LengthBaseInterface {
@@ -19,16 +20,17 @@ public class Meter extends LengthBase implements LengthBaseInterface {
         addConversion(LengthSlugs.YD.name(), 1.09361);
         addConversion(LengthSlugs.MI.name(), 1609.34);
     }
+
     // Millimeters
     @Override
     public double fromMillimeters(double valueIn) {
         return valueIn / getConversion(LengthSlugs.MM.name());
     }
     @Override
-
     public double toMillimeters(double valueIn) {
         return valueIn * getConversion(LengthSlugs.MM.name());
     }
+
     // Centimeters
     @Override
     public double fromCentimeters(double valueIn) { return valueIn / getConversion(LengthSlugs.CM.name());}
@@ -42,7 +44,6 @@ public class Meter extends LengthBase implements LengthBaseInterface {
     public double toMeters(double valueIn) {
         return valueIn * getConversion(LengthSlugs.M.name());
     }
-
     @Override
     public double fromMeters(double valueIn) {
         return valueIn / getConversion(LengthSlugs.M.name());
@@ -66,6 +67,7 @@ public class Meter extends LengthBase implements LengthBaseInterface {
     public double toInches(double valueIn) {
         return valueIn * getConversion(LengthSlugs.IN.name());
     }
+
     // Feet
     @Override
     public double fromFeet(double valueIn) {
@@ -75,6 +77,7 @@ public class Meter extends LengthBase implements LengthBaseInterface {
     public double toFeet(double valueIn) {
         return valueIn * getConversion(LengthSlugs.FT.name());
     }
+
     // Yards
     @Override
     public double fromYards(double valueIn) {
@@ -163,6 +166,11 @@ public class Meter extends LengthBase implements LengthBaseInterface {
 
         return convertedValue;
     }
+    public double convert(double value,  LengthUnits fromUnit, LengthUnits toUnit) {
+        double valueInCelsius = getValueInMeters(value, fromUnit);
+        return setValueFromMeters(valueInCelsius, toUnit);
+    }
+
     public String getResult() {
         return null;
     }
