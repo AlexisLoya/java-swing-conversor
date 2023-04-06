@@ -31,9 +31,7 @@ public class Meter extends LengthBase implements LengthBaseInterface {
     }
     // Centimeters
     @Override
-    public double fromCentimeters(double valueIn) {
-        return valueIn / getConversion(LengthSlugs.CM.name());
-    }
+    public double fromCentimeters(double valueIn) { return valueIn / getConversion(LengthSlugs.CM.name());}
     @Override
     public double toCentimeters(double valueIn) {
         return valueIn * getConversion(LengthSlugs.CM.name());
@@ -63,9 +61,7 @@ public class Meter extends LengthBase implements LengthBaseInterface {
 
     // Inches
     @Override
-    public double fromInches(double valueIn) {
-        return valueIn * getConversion(LengthSlugs.IN.name());
-    }
+    public double fromInches(double valueIn) { return valueIn / getConversion(LengthSlugs.IN.name());}
     @Override
     public double toInches(double valueIn) {
         return valueIn * getConversion(LengthSlugs.IN.name());
@@ -73,7 +69,7 @@ public class Meter extends LengthBase implements LengthBaseInterface {
     // Feet
     @Override
     public double fromFeet(double valueIn) {
-        return valueIn * getConversion(LengthSlugs.FT.name());
+        return valueIn / getConversion(LengthSlugs.FT.name());
     }
     @Override
     public double toFeet(double valueIn) {
@@ -82,7 +78,7 @@ public class Meter extends LengthBase implements LengthBaseInterface {
     // Yards
     @Override
     public double fromYards(double valueIn) {
-        return valueIn * getConversion(LengthSlugs.YD.name());
+        return valueIn / getConversion(LengthSlugs.YD.name());
     }
     @Override
     public double toYards(double valueIn) {
