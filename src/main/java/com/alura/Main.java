@@ -6,6 +6,8 @@ import com.alura.type.length.Meter;
 import com.alura.type.length.utils.LengthUnits;
 import com.alura.type.tempeture.Temperature;
 import com.alura.type.tempeture.utils.TemperatureTypes;
+import com.alura.type.time.Time;
+import com.alura.type.time.utils.TimeUnits;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -18,6 +20,7 @@ import javax.swing.*;
 public class Main extends JFrame {
 
     Map<String, Double> currencyRates = new HashMap<>();
+
     public Main() {
         setTitle("Unit Converter");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -25,6 +28,7 @@ public class Main extends JFrame {
         setLayout(new BorderLayout());
 
         JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.addTab("Time", createTimeConverterPanel());
         tabbedPane.addTab("Currency", createCurrencyConverterPanel());
         tabbedPane.addTab("Length Units", createLengthConverterPanel());
         tabbedPane.addTab("Temperature Units", createTemperatureConverterPanel());
@@ -37,7 +41,7 @@ public class Main extends JFrame {
         JPanel panel = new JPanel();
         panel.setLayout(new FlowLayout());
 
-        String[] units =new String[LengthUnits.values().length];
+        String[] units = new String[LengthUnits.values().length];
         // get the length of the enum
         LengthUnits[] lengthUnits = LengthUnits.values();
         for (int i = 0; i < lengthUnits.length; i++) {
@@ -74,7 +78,7 @@ public class Main extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     double inputValue = Double.parseDouble(input1TextField.getText());
-                    double convertedValue = unitConvert(inputValue,unit1ComboBox.getSelectedIndex(),unit2ComboBox.getSelectedIndex());
+                    double convertedValue = unitConvert(inputValue, unit1ComboBox.getSelectedIndex(), unit2ComboBox.getSelectedIndex());
                     input2TextField.setText(formatResult(convertedValue));
                     resultTextArea.setText("Converted successfully.");
                 } catch (NumberFormatException ex) {
@@ -102,6 +106,7 @@ public class Main extends JFrame {
 
         return panel;
     }
+
     private JPanel createTemperatureConverterPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new FlowLayout());
@@ -187,7 +192,7 @@ public class Main extends JFrame {
                     Coin coin = new Coin();
 
                     double inputValue = Double.parseDouble(currencyInput1TextField.getText());
-                    double convertedValue = coin.convertCurrency(inputValue,currencyRates,
+                    double convertedValue = coin.convertCurrency(inputValue, currencyRates,
                             currencyUnit1ComboBox.getSelectedIndex(),
                             currencyUnit2ComboBox.getSelectedIndex());
                     currencyInput2TextField.setText(formatResult(convertedValue));
@@ -214,6 +219,61 @@ public class Main extends JFrame {
         return panel;
     }
 
+    private JPanel createTimeConverterPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        String[] timeUnits = {"Milliseconds", "Seconds", "Minutes", "Hours", "Days", "Weeks", "Years"};
+
+        JLabel inputLabel = new JLabel("Value:");
+        c.gridx = 0;
+        c.gridy = 0;
+        panel.add(inputLabel, c);
+
+        JTextField inputValue = new JTextField(10);
+        c.gridx = 1;
+        c.gridy = 0;
+        panel.add(inputValue, c);
+
+        JComboBox<String> inputUnit = new JComboBox<>(timeUnits);
+        c.gridx = 2;
+        c.gridy = 0;
+        panel.add(inputUnit, c);
+
+        JLabel outputLabel = new JLabel("Result:");
+        c.gridx = 0;
+        c.gridy = 1;
+        panel.add(outputLabel, c);
+
+        JTextField outputValue = new JTextField(10);
+        outputValue.setEditable(false);
+        c.gridx = 1;
+        c.gridy = 1;
+        panel.add(outputValue, c);
+
+        JComboBox<String> outputUnit = new JComboBox<>(timeUnits);
+        c.gridx = 2;
+        c.gridy = 1;
+        panel.add(outputUnit, c);
+
+        JButton convertButton = new JButton("Convert");
+        convertButton.addActionListener(e -> {
+            double value = Double.parseDouble(inputValue.getText());
+            int fromUnit = inputUnit.getSelectedIndex();
+            int toUnit = outputUnit.getSelectedIndex();
+            double result = timeConvert(value, fromUnit, toUnit);
+            outputValue.setText(formatResult(result));
+        });
+
+        c.gridx = 1;
+        c.gridy = 2;
+        panel.add(convertButton, c);
+
+        return panel;
+    }
+
+
     private String formatResult(double value) {
         DecimalFormat decimalFormat = new DecimalFormat("#.##########");
         return decimalFormat.format(value);
@@ -225,7 +285,7 @@ public class Main extends JFrame {
         LengthUnits unit1 = LengthUnits.values()[fromUnit];
         LengthUnits unit2 = LengthUnits.values()[toUnit];
 
-        return meter.convert(value,unit1, unit2);
+        return meter.convert(value, unit1, unit2);
     }
 
     private double temperatureConvert(double value, int fromUnit, int toUnit) {
@@ -234,9 +294,22 @@ public class Main extends JFrame {
         // Get the value from the input field
         TemperatureTypes unit1 = TemperatureTypes.values()[fromUnit];
         TemperatureTypes unit2 = TemperatureTypes.values()[toUnit];
-        return temperature.convert(value,unit1, unit2);
+        return temperature.convert(value, unit1, unit2);
     }
 
+    private double currencyConvert(double value, int fromUnit, int toUnit) {
+        Coin coin = new Coin();
+
+        // Get the value from the input field
+        return coin.convertCurrency(value, currencyRates, fromUnit, toUnit);
+    }
+
+    private double timeConvert(double value, int fromUnit, int toUnit) {
+        Time time = new Time();
+
+        // Get the value from the input field
+        return time.convertTime(value,fromUnit, toUnit);
+    }
 
     public static void main(String[] args) {
         Main main = new Main();
