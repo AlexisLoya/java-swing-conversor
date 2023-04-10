@@ -1,9 +1,12 @@
 package com.alura.type.currency;
 
+
+
 public class BaseCoin {
     private String name;
     private String symbol;
     private String slug;
+
 
     public BaseCoin(String name, String symbol, String slug) {
         this.name = name;

@@ -1,6 +1,7 @@
 package com.alura;
 // Swing
 
+import com.alura.type.currency.Coin;
 import com.alura.type.length.Meter;
 import com.alura.type.length.utils.LengthUnits;
 import com.alura.type.tempeture.Temperature;
@@ -10,10 +11,13 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.*;
 
 public class Main extends JFrame {
 
+    Map<String, Double> currencyRates = new HashMap<>();
     public Main() {
         setTitle("Unit Converter");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -21,6 +25,7 @@ public class Main extends JFrame {
         setLayout(new BorderLayout());
 
         JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.addTab("Currency", createCurrencyConverterPanel());
         tabbedPane.addTab("Length Units", createLengthConverterPanel());
         tabbedPane.addTab("Temperature Units", createTemperatureConverterPanel());
         add(tabbedPane, BorderLayout.CENTER);
@@ -135,6 +140,73 @@ public class Main extends JFrame {
                     tempResultTextArea.setText("Converted successfully.");
                 } catch (NumberFormatException ex) {
                     tempResultTextArea.setText("Invalid input. Please enter a valid number.");
+                }
+            }
+        });
+
+        return panel;
+    }
+
+    private JPanel createCurrencyConverterPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new FlowLayout());
+
+        String[] currencyUnits = {"Dollar", "Mexican Peso", "British Pound", "Euro", "Yen"};
+
+        JComboBox<String> currencyUnit1ComboBox = new JComboBox<>(currencyUnits);
+        JComboBox<String> currencyUnit2ComboBox = new JComboBox<>(currencyUnits);
+
+        JTextField currencyInput1TextField = new JTextField(10);
+        JTextField currencyInput2TextField = new JTextField(10);
+        currencyInput2TextField.setEditable(false);
+
+        JButton currencyConvertButton = new JButton("Convert");
+        JButton updateRatesButton = new JButton("Update Rates");
+        JTextArea currencyResultTextArea = new JTextArea(3, 30);
+        currencyResultTextArea.setEditable(false);
+
+        panel.add(currencyInput1TextField);
+        panel.add(currencyUnit1ComboBox);
+        panel.add(new JLabel("to"));
+        panel.add(currencyInput2TextField);
+        panel.add(currencyUnit2ComboBox);
+        panel.add(currencyConvertButton);
+        panel.add(currencyResultTextArea);
+        panel.add(updateRatesButton);
+        try {
+            Coin coin = new Coin();
+            currencyRates = coin.updateCurrencyRates();
+
+        } catch (Exception e) {
+            System.err.println("Error fetching initial currency rates. Please try updating rates manually.");
+        }
+        currencyConvertButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    Coin coin = new Coin();
+
+                    double inputValue = Double.parseDouble(currencyInput1TextField.getText());
+                    double convertedValue = coin.convertCurrency(inputValue,currencyRates,
+                            currencyUnit1ComboBox.getSelectedIndex(),
+                            currencyUnit2ComboBox.getSelectedIndex());
+                    currencyInput2TextField.setText(formatResult(convertedValue));
+                    currencyResultTextArea.setText("Converted successfully.");
+                } catch (NumberFormatException ex) {
+                    currencyResultTextArea.setText("Invalid input. Please enter a valid number.");
+                }
+            }
+        });
+
+        updateRatesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    Coin coin = new Coin();
+                    coin.updateCurrencyRates();
+                    currencyResultTextArea.setText("Currency rates updated successfully.");
+                } catch (Exception ex) {
+                    currencyResultTextArea.setText("Error updating rates. Please try again.");
                 }
             }
         });
