@@ -122,8 +122,8 @@ public class Main extends JFrame {
         panel.add(tempInput1TextField);
         panel.add(tempUnit1ComboBox);
         panel.add(new JLabel("to"));
-        panel.add(tempInput2TextField);
         panel.add(tempUnit2ComboBox);
+        panel.add(tempInput2TextField);
         panel.add(tempConvertButton);
         panel.add(tempResultTextArea);
 
@@ -167,9 +167,9 @@ public class Main extends JFrame {
 
         panel.add(currencyInput1TextField);
         panel.add(currencyUnit1ComboBox);
-        panel.add(currencyInput2TextField);
         panel.add(new JLabel("to"));
         panel.add(currencyUnit2ComboBox);
+        panel.add(currencyInput2TextField);
         panel.add(currencyConvertButton);
         panel.add(currencyResultTextArea);
         panel.add(updateRatesButton);
