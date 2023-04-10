@@ -62,8 +62,8 @@ public class Main extends JFrame {
         panel.add(input1TextField);
         panel.add(unit1ComboBox);
         panel.add(new JLabel("to"));
-        panel.add(input2TextField);
         panel.add(unit2ComboBox);
+        panel.add(input2TextField);
         panel.add(convertButton);
         panel.add(resultTextArea);
         panel.add(clearInputButton);
@@ -167,8 +167,8 @@ public class Main extends JFrame {
 
         panel.add(currencyInput1TextField);
         panel.add(currencyUnit1ComboBox);
-        panel.add(new JLabel("to"));
         panel.add(currencyInput2TextField);
+        panel.add(new JLabel("to"));
         panel.add(currencyUnit2ComboBox);
         panel.add(currencyConvertButton);
         panel.add(currencyResultTextArea);
